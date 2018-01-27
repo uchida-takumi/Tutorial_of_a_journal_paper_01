@@ -21,8 +21,8 @@ class StochasticGradientDescent:
                 user_ids, item_ids and user_ids must have same length.
         
         Results of fit:
-            self.UserFactores : the learned factores of users. {user_id : np.array([factor_1, fctor_2, ...]),}
-            self.ItemFactores : the learned factores of items. {item_id : np.array([factor_1, fctor_2, ...]),}
+            self.UserFactors : the learned factors of users. {user_id : np.array([factor_1, fctor_2, ...]),}
+            self.ItemFactors : the learned factors of items. {item_id : np.array([factor_1, fctor_2, ...]),}
         
         After fit, self.predict(user_ids, item_ids) is available
         """
@@ -34,8 +34,8 @@ class StochasticGradientDescent:
             raise Exception("user_ids, item_ids and user_ids must have same length.")        
             
         # Initialize
-        self.UserFactores = {id_ : np.random.uniform(size=n_factors) for id_ in set(user_ids)}
-        self.ItemFactores = {id_ : np.random.uniform(size=n_factors) for id_ in set(item_ids)}
+        self.UserFactors = {id_ : np.random.uniform(size=n_factors) for id_ in set(user_ids)}
+        self.ItemFactors = {id_ : np.random.uniform(size=n_factors) for id_ in set(item_ids)}
         
         self.params = {'n_factors':n_factors, 'epochs':epochs, 'alpha':alpha}
         
@@ -47,9 +47,9 @@ class StochasticGradientDescent:
             # loop over our data in batches
             for (user_id, item_id, rating) in zip(user_ids, item_ids, ratings):
                 
-                # update self.UserFactores and self.ItemFactores
-                for update_target in ['UserFactores', 'ItemFactores']:
-                    # get predicted values (preds) useing temporaly self.UserFactores and self.ItemFactores.
+                # update self.UserFactors and self.ItemFactors
+                for update_target in ['UserFactors', 'ItemFactors']:
+                    # get predicted values (preds) useing temporaly self.UserFactors and self.ItemFactors.
                     pred = self._predict_of_single_id(user_id, item_id)
 
                     # get error of this batch.
@@ -66,10 +66,10 @@ class StochasticGradientDescent:
                     
                     # use the gradient computed on the current batch to take
                     # a "step" in the corrent direction
-                    if update_target=='UserFactores':                        
-                        self.UserFactores[user_id] += - alpha * gradient
-                    elif update_target=='ItemFactores':
-                        self.ItemFactores[item_id] += - alpha * gradient
+                    if update_target=='UserFactors':                        
+                        self.UserFactors[user_id] += - alpha * gradient
+                    elif update_target=='ItemFactors':
+                        self.ItemFactors[item_id] += - alpha * gradient
             
             # update our loss history list by taking the average loss
             # across all batches
@@ -79,13 +79,13 @@ class StochasticGradientDescent:
         return np.array([self._predict_of_single_id(user_id, item_id) for user_id, item_id in zip(user_ids, item_ids)])
     
     def _predict_of_single_id(self, user_id, item_id):
-        return (self.UserFactores[user_id] * self.ItemFactores[item_id]).sum()
+        return (self.UserFactors[user_id] * self.ItemFactors[item_id]).sum()
     
-    def _get_gradient(self, user_id, item_id, error, update_target='UserFactores'):
-        if update_target=='UserFactores':
-            gradient = self.ItemFactores[item_id] * error
-        elif update_target=='ItemFactores':
-            gradient = self.UserFactores[user_id] * error
+    def _get_gradient(self, user_id, item_id, error, update_target='UserFactors'):
+        if update_target=='UserFactors':
+            gradient = self.ItemFactors[item_id] * error
+        elif update_target=='ItemFactors':
+            gradient = self.UserFactors[user_id] * error
         return gradient
 
 
@@ -107,8 +107,8 @@ if __name__ == '__main__':
     predict_result = sgd.predict(user_ids, item_ids)
     
     print(sgd.lossHistory)
-    print(sgd.UserFactores)
-    print(sgd.ItemFactores)
+    print(sgd.UserFactors)
+    print(sgd.ItemFactors)
         
     [(u,i,p,r) for u,i,p,r in zip(user_ids, item_ids, predict_result, ratings)]
     
