@@ -7,7 +7,7 @@ This code is mostly form:
 import numpy as np
 
 
-class StochasticGradientDescent:
+class MFCF_StochasticGradientDescent:
     
     def __init__(self):
         self.lossHistory = []
@@ -17,7 +17,7 @@ class StochasticGradientDescent:
         Inputs:
             user_ids : [user01, user02, user03, ...]
             item_ids : [item42, user42, user59, ...]
-            user_ids : [  2   ,    4  ,   3   , ...]
+            ratings  : [  2   ,    4  ,   3   , ...]
                 user_ids, item_ids and user_ids must have same length.
         
         Results of fit:
@@ -102,7 +102,7 @@ if __name__ == '__main__':
 
     ratings  = [(answer_UserFactor[u]*answer_ItemFactor[i]).sum() for u,i in zip(user_ids, item_ids)]  
 
-    sgd = StochasticGradientDescent()    
+    sgd = MFCF_StochasticGradientDescent()    
     sgd.fit(user_ids, item_ids, ratings, n_factors=n_factors, epochs=100, alpha=0.001)    
     predict_result = sgd.predict(user_ids, item_ids)
     
