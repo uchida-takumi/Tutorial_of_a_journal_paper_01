@@ -3,10 +3,17 @@
 import numpy as np
 import pandas as pd
 import re
+from src.sub_module.get_attributes_merged import get_attributes_merged
 
 
 class confidence:
-    def __init__(self, T, N=2**(-100)):
+    def __init__(self, T_input, N=2**(-100)):
+        # convert T_input to set attributes
+        T = get_attributes_merged(T_input)
+        
+        # set T as self.T
+        self.T = T.loc[:, ['user_id', 'movie_id']]
+        
         # set list of user_id and movie_id.
         self.user_ids_list  = T['user_id'].unique()
         self.movie_ids_list = T['movie_id'].unique()
@@ -37,8 +44,7 @@ class confidence:
         """
         This is based on the equation (10).
 
-        Belows code is too slow to run at set of user_id and movie_id.
-        But, it is more readable. When we use on set of user_id, movie_id, use self.get_from_dataframe.
+        When we use on set of user_id, movie_id, use self.get_from_dataframe.
         """
         # the sample number of the user_id and movie_id.
         d_user = self.user_d[user_id]
@@ -53,12 +59,15 @@ class confidence:
 
         return np.prod(prod_list)
     
-    def get_from_dataframe(T):
+    def get_from_T(self):
         """
          An argument T must be a DataFrame which has 
         'user_id' and 'movie_id' in columns of T.
         """
-        pass
+        apply_func = lambda row: self.get(row[0], row[1])
+        map_generator = map(apply_func, self.T.values)
+        return list(map_generator)
+        
 
 if __name__ == '__main__':
     from src import config
@@ -67,13 +76,13 @@ if __name__ == '__main__':
     r_cols = ['user_id', 'movie_id', 'rating', 'unix_timestamp']
     ratings = pd.read_csv(config.PATH_rating, sep='\t', names=r_cols,
                           encoding='latin-1')
-    ratings = ratings.loc[:5, :]
-
+    ratings = ratings.loc[:10000, :]
     ratings  = get_merged(ratings)
 
     C = confidence(ratings)
     C.get(196, 242)
-
+    C.get_from_dataframe(ratings)
+    
     C.user_d
     C.movie_d
     C.movie_attributes

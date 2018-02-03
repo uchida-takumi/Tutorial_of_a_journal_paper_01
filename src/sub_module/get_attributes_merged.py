@@ -21,7 +21,7 @@ movies = pd.read_csv(config.PATH_item, sep='|',
                      encoding='latin-1')
 movies = movies.loc[:, ['movie_id']+genre_cols]
 
-def get_merged(ratings):
+def get_attributes_merged(ratings):
     ratings_ = ratings.loc[:, ['user_id', 'movie_id', 'rating']]
     ratings_ = ratings_.merge(users, how='inner', on='user_id')
     ratings_ = ratings_.merge(movies, how='inner', on='movie_id')
